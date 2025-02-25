@@ -1,3 +1,6 @@
+import base64
+import os
+import re
 from pathlib import Path
 
 import pymupdf
@@ -11,6 +14,23 @@ MINERU_DEBUG_PATH.mkdir(exist_ok=True)
 def read_fn(path):
     disk_rw = FileBasedDataReader(MINERU_DEBUG_PATH)
     return disk_rw.read(path)
+
+
+def image_to_base64(image_path):
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
+
+
+def replace_image_with_base64(markdown_text, image_dir_path):
+    pattern = r"\!\[(?:[^\]]*)\]\(([^)]+)\)"
+
+    def replace(match):
+        relative_path = match.group(1)
+        full_path = os.path.join(image_dir_path, relative_path)
+        base64_image = image_to_base64(full_path)
+        return f"![{relative_path}](data:image/jpeg;base64,{base64_image})"
+
+    return re.sub(pattern, replace, markdown_text)
 
 
 def do_process_mineru(input_path, output_dir):
@@ -44,6 +64,8 @@ def convert_mineru(path: str, file_name: str):
 
     with open(local_md_dir / f"{file_name}.md", "r") as file:
         text = file.read()
+
+    text = replace_image_with_base64(text, local_md_dir)
 
     debug_pdf = str(local_md_dir / (file_name + "_layout.pdf"))
     doc = pymupdf.open(debug_pdf)  # open document

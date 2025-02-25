@@ -20,6 +20,9 @@ def convert_elements_to_markdown(elements):
             line = f"\n{e.metadata.text_as_html}\n"
         elif e.category == "UncategorizedText":
             line = ""
+        elif e.category == "Image":
+            # base64 image
+            line = f"![{e.text}](data:image/jpeg;base64," f"{e.metadata.image_base64})"
         else:
             line = e.text
 
@@ -54,8 +57,8 @@ def convert_unstructured(path: str, file_name: str):
         strategy="hi_res",
         infer_table_structure=True,
         # extract_images_in_pdf=True,
-        # extract_image_block_types=["Image", "Table"],
-        # extract_image_block_to_payload=False,
+        extract_image_block_types=["Image", "Table"],
+        extract_image_block_to_payload=True,
         analysis=True,
         analyzed_image_output_dir_path=UNSTRUCTURED_DEBUG_PATH,
     )
