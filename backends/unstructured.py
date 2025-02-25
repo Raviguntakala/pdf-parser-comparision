@@ -66,8 +66,11 @@ def convert_unstructured(path: str, file_name: str):
     )
     text = convert_elements_to_markdown(elements)
     debug_image_dir = UNSTRUCTURED_DEBUG_PATH / "analysis" / file_name / "bboxes"
-    debug_image_paths = [
-        path for path in debug_image_dir.iterdir() if "od_model" in path.stem
-    ]
+    if debug_image_dir.exists():
+        debug_image_paths = [
+            path for path in debug_image_dir.iterdir() if "od_model" in path.stem
+        ]
+    else:
+        debug_image_paths = []
 
     return text, debug_image_paths

@@ -53,7 +53,7 @@ def convert_document(path, method, enabled=True):
 
 def show_tabs(selected_methods):
     visible_tabs = []
-    for method in supported_methods:
+    for method in SUPPORTED_METHODS:
         visible_tabs.append(gr.update(visible=method in selected_methods))
 
     return visible_tabs
@@ -66,14 +66,14 @@ latex_delimiters = [
 
 # startup test (also for loading models the first time)
 start_startup = time.time()
-test_pdf_path = "/home/tadashi/MinerU/examples/complex_layout.pdf"
-supported_methods = ["Docling", "Marker", "Unstructured", "MinerU", "PyMuPDF"]
+WARMUP_PDF_PATH = "/home/tadashi/MinerU/examples/complex_layout.pdf"
+SUPPORTED_METHODS = ["Docling", "Marker", "Unstructured", "MinerU", "PyMuPDF"]
 
-# print("Warm-up sequence")
-# for method in supported_methods:
-#     for _ in range(1):
-#         convert_document(test_pdf_path, method)
-# print("Start up time", time.time() - start_startup, "seconds")
+print("Warm-up sequence")
+for method in SUPPORTED_METHODS:
+    for _ in range(1):
+        convert_document(WARMUP_PDF_PATH, method)
+print("Start up time", time.time() - start_startup, "seconds")
 
 with gr.Blocks(
     theme=gr.themes.Ocean(),
@@ -84,7 +84,7 @@ with gr.Blocks(
     output_components = []
     output_tabs = []
     visualization_sub_tabs = []
-    first_method = supported_methods[0]
+    first_method = SUPPORTED_METHODS[0]
 
     with gr.Row():
         with gr.Column(variant="panel", scale=5):
@@ -99,7 +99,7 @@ with gr.Blocks(
         with gr.Column(variant="panel", scale=5):
             with gr.Row():
                 methods = gr.Dropdown(
-                    supported_methods,
+                    SUPPORTED_METHODS,
                     label="Conversion methods",
                     value=first_method,
                     multiselect=True,
@@ -125,7 +125,7 @@ with gr.Blocks(
 
         with gr.Column(variant="panel", scale=5):
             with gr.Tabs():
-                for method in supported_methods:
+                for method in SUPPORTED_METHODS:
                     with gr.Tab(method, visible=False) as output_tab:
                         with gr.Tabs():
                             with gr.Tab("Markdown rendering"):
@@ -162,17 +162,17 @@ with gr.Blocks(
         inputs=[methods],
         outputs=output_tabs,
     )
-    for idx, method in enumerate(supported_methods):
+    for idx, method in enumerate(SUPPORTED_METHODS):
 
         def progress_message(selected_methods, method=method):
             selected_methods_indices = [
                 idx
-                for idx, current_method in enumerate(supported_methods)
+                for idx, current_method in enumerate(SUPPORTED_METHODS)
                 if current_method in selected_methods
             ]
             try:
                 current_method_idx = selected_methods_indices.index(
-                    supported_methods.index(method)
+                    SUPPORTED_METHODS.index(method)
                 )
                 msg = (
                     f"Processing ({current_method_idx + 1} / "

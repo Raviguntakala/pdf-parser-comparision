@@ -42,8 +42,11 @@ def convert_docling(path: str, file_name: str):
     result = docling_converter.convert(path)
     text = result.document.export_to_markdown(image_mode=ImageRefMode.EMBEDDED)
     debug_image_dir = DOCLING_DEBUG_PATH / f"debug_{file_name}"
-    debug_image_paths = [
-        path for path in debug_image_dir.iterdir() if path.suffix == ".png"
-    ]
+    if debug_image_dir.exists():
+        debug_image_paths = [
+            path for path in debug_image_dir.iterdir() if path.suffix == ".png"
+        ]
+    else:
+        debug_image_paths = []
 
     return text, debug_image_paths

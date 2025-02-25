@@ -72,11 +72,13 @@ def convert_mineru(path: str, file_name: str):
     text = replace_image_with_base64(text, local_md_dir)
 
     debug_pdf = str(local_md_dir / (file_name + "_layout.pdf"))
-    doc = pymupdf.open(debug_pdf)  # open document
-    for page in doc:  # iterate through the pages
-        pix = page.get_pixmap()  # render page to an image
-        page_debug_path = str(output_path / ("page-%i.png" % page.number))
-        debug_image_paths.append(page_debug_path)
-        pix.save(page_debug_path)  # store image as a PNG
+
+    if Path(debug_pdf).exists():
+        doc = pymupdf.open(debug_pdf)  # open document
+        for page in doc:  # iterate through the pages
+            pix = page.get_pixmap()  # render page to an image
+            page_debug_path = str(output_path / ("page-%i.png" % page.number))
+            debug_image_paths.append(page_debug_path)
+            pix.save(page_debug_path)  # store image as a PNG
 
     return text, debug_image_paths

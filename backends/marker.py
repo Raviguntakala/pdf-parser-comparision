@@ -53,8 +53,11 @@ def convert_marker(path: str, file_name: str):
     text, _, images = text_from_rendered(rendered)
     text = markdown_insert_images(text, images)
     debug_image_dir = Path(rendered.metadata.get("debug_data_path"))
-    debug_image_paths = [
-        path for path in debug_image_dir.iterdir() if "pdf_page" in path.stem
-    ]
+    if debug_image_dir.exists():
+        debug_image_paths = [
+            path for path in debug_image_dir.iterdir() if "pdf_page" in path.stem
+        ]
+    else:
+        debug_image_paths = []
 
     return text, debug_image_paths

@@ -1,3 +1,4 @@
+import functools
 import re
 from pathlib import Path
 from shutil import copy2
@@ -12,6 +13,7 @@ def remove_images_from_markdown(markdown_text):
     return markdown_text
 
 
+@functools.lru_cache(maxsize=None)
 def trim_pages(pdf_path, output_path, trim_pages=5):
     doc = pymupdf.open(pdf_path)
     parent_dir_name = Path(pdf_path).parent.name
