@@ -3,9 +3,7 @@ title: PDFParsersPlayground
 emoji: 🐢
 colorFrom: blue
 colorTo: green
-sdk: gradio
-sdk_version: 5.7.1
-app_file: app.py
+sdk: docker
 pinned: false
 short_description: Convert PDFs to Markdown with open-source parsers
 ---

@@ -1,4 +1,4 @@
-from utils import fix_problematic_imports  # noqa
+from utils import fix_problematic_imports
 
 fix_problematic_imports()  # noqa
 
@@ -19,7 +19,7 @@ from backends import (
 from backends.settings import ENABLE_DEBUG_MODE
 from utils import remove_images_from_markdown, trim_pages
 
-TRIMMED_PDF_PATH = Path("/tmp/gradio/trim")
+TRIMMED_PDF_PATH = Path("/tmp/trimmed_input")
 TRIMMED_PDF_PATH.mkdir(exist_ok=True)
 
 
