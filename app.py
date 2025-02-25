@@ -77,7 +77,7 @@ latex_delimiters = [
 
 # startup test (also for loading models the first time)
 start_startup = time.time()
-WARMUP_PDF_PATH = "/home/tadashi/MinerU/examples/complex_layout.pdf"
+WARMUP_PDF_PATH = "table.pdf"
 SUPPORTED_METHODS = ["Docling", "Marker", "Unstructured", "MinerU", "PyMuPDF"]
 
 print("Warm-up sequence")
