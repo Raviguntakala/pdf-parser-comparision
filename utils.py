@@ -29,3 +29,21 @@ def trim_pages(pdf_path, output_path, trim_pages=5):
         copy2(pdf_path, str(output_file_path))
 
     return str(output_file_path)
+
+
+def fix_problematic_imports():
+    import sys
+    import types
+
+    # Create a fake 'UnimernetModel' class inside a fake 'Unimernet' module
+    fake_unimernet_module = types.ModuleType(
+        "magic_pdf.model.sub_modules.mfr.unimernet.Unimernet"
+    )
+    fake_unimernet_module.UnimernetModel = type(  # type: ignore
+        "UnimernetModel", (), {}
+    )
+
+    # Register fake module in sys.modules
+    sys.modules[
+        "magic_pdf.model.sub_modules.mfr.unimernet.Unimernet"
+    ] = fake_unimernet_module

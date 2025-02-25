@@ -1,3 +1,8 @@
+from utils import fix_problematic_imports  # noqa
+
+fix_problematic_imports()  # noqa
+
+
 import time
 from pathlib import Path
 
@@ -46,9 +51,15 @@ def convert_document(path, method, enabled=True):
     elif method == "MinerU":
         text, debug_image_paths = convert_mineru(path, file_name)
 
-    end = time.time()
-    print(f"Conversion with {method} took {end - start} seconds")
-    return text, remove_images_from_markdown(text), debug_image_paths
+    duration = time.time() - start
+    duration_message = f"Conversion with {method} took *{duration:.2f} seconds*"
+    print(duration_message)
+    return (
+        duration_message,
+        text,
+        remove_images_from_markdown(text),
+        debug_image_paths,
+    )
 
 
 def show_tabs(selected_methods):
@@ -73,7 +84,8 @@ print("Warm-up sequence")
 for method in SUPPORTED_METHODS:
     for _ in range(1):
         convert_document(WARMUP_PDF_PATH, method)
-print("Start up time", time.time() - start_startup, "seconds")
+startup_duration = time.time() - start_startup
+print(f"Total start-up time: {startup_duration:.2f} seconds")
 
 with gr.Blocks(
     theme=gr.themes.Ocean(),
@@ -149,9 +161,19 @@ with gr.Blocks(
                                 markdown_text = gr.TextArea(
                                     lines=45, show_label=False, container=False
                                 )
+                            with gr.Tab("Reference"):
+                                output_description = gr.Markdown(
+                                    container=False,
+                                    show_label=False,
+                                )
 
                     output_components.extend(
-                        [markdown_render, markdown_text, debug_images]
+                        [
+                            output_description,
+                            markdown_render,
+                            markdown_text,
+                            debug_images,
+                        ]
                     )
                     output_tabs.append(output_tab)
                     visualization_sub_tabs.append(visual_sub_tab)
@@ -199,7 +221,7 @@ with gr.Blocks(
                 input_file, methods, method
             ),
             inputs=[input_file, methods],
-            outputs=output_components[idx * 3 : (idx + 1) * 3],
+            outputs=output_components[idx * 4 : (idx + 1) * 4],
         )
 
     click_event.then(
