@@ -7,6 +7,8 @@ import pymupdf
 from magic_pdf.data.data_reader_writer import FileBasedDataReader
 from magic_pdf.tools.common import do_parse, prepare_env
 
+from .settings import ENABLE_DEBUG_MODE
+
 MINERU_DEBUG_PATH = Path("/tmp/mineru")
 MINERU_DEBUG_PATH.mkdir(exist_ok=True)
 
@@ -48,6 +50,8 @@ def do_process_mineru(input_path, output_dir):
         parse_method,
         debug_able=False,
         f_dump_orig_pdf=False,
+        f_draw_layout_bbox=ENABLE_DEBUG_MODE,
+        f_draw_char_bbox=ENABLE_DEBUG_MODE,
         formula_enable=False,
         table_enable=True,
     )

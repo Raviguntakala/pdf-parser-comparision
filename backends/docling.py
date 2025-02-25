@@ -10,6 +10,8 @@ from docling.datamodel.settings import settings
 from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling_core.types.doc import ImageRefMode
 
+from .settings import ENABLE_DEBUG_MODE
+
 DOCLING_DEBUG_PATH = Path("/tmp/docling")
 
 # Docling settings
@@ -23,8 +25,8 @@ pipeline_options.images_scale = 2.0
 
 # debug visualization settings
 settings.debug.debug_output_path = str(DOCLING_DEBUG_PATH)
-settings.debug.visualize_layout = True
-settings.debug.visualize_tables = True
+settings.debug.visualize_layout = ENABLE_DEBUG_MODE
+settings.debug.visualize_tables = ENABLE_DEBUG_MODE
 
 # Docling init
 docling_converter = DocumentConverter(

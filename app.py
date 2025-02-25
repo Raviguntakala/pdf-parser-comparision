@@ -11,6 +11,7 @@ from backends import (
     convert_mineru,
     convert_unstructured,
 )
+from backends.settings import ENABLE_DEBUG_MODE
 from utils import remove_images_from_markdown, trim_pages
 
 TRIMMED_PDF_PATH = Path("/tmp/gradio/trim")
@@ -18,9 +19,9 @@ TRIMMED_PDF_PATH.mkdir(exist_ok=True)
 
 
 def convert_document(path, method, enabled=True):
-    print("Processing file", path, "with method", method, "enabled", enabled)
-
-    if not enabled:
+    if enabled:
+        print("Processing file", path, "with method", method)
+    else:
         return "", "", []
 
     # benchmarking
@@ -84,7 +85,6 @@ with gr.Blocks(
     output_tabs = []
     visualization_sub_tabs = []
     first_method = supported_methods[0]
-    num_methods = len(supported_methods)
 
     with gr.Row():
         with gr.Column(variant="panel", scale=5):
@@ -106,7 +106,9 @@ with gr.Blocks(
                 )
             with gr.Row():
                 visual_checkbox = gr.Checkbox(
-                    label="Enable debug visualizations", value=True
+                    label="Enable debug visualizations",
+                    visible=ENABLE_DEBUG_MODE,
+                    value=True,
                 )
             with gr.Row():
                 convert_btn = gr.Button("Convert", variant="primary", scale=2)
@@ -134,7 +136,10 @@ with gr.Blocks(
                                     line_breaks=True,
                                     latex_delimiters=latex_delimiters,
                                 )
-                            with gr.Tab("Debug visualizations") as visual_sub_tab:
+                            with gr.Tab(
+                                "Debug visualizations",
+                                visible=ENABLE_DEBUG_MODE,
+                            ) as visual_sub_tab:
                                 debug_images = gr.Gallery(
                                     show_label=False,
                                     container=False,
@@ -159,16 +164,35 @@ with gr.Blocks(
     )
     for idx, method in enumerate(supported_methods):
 
-        def progress_message(idx=idx, method=method):
-            return f"Processing ({idx + 1} / {num_methods}) **{method}**...\n\n"
+        def progress_message(selected_methods, method=method):
+            selected_methods_indices = [
+                idx
+                for idx, current_method in enumerate(supported_methods)
+                if current_method in selected_methods
+            ]
+            try:
+                current_method_idx = selected_methods_indices.index(
+                    supported_methods.index(method)
+                )
+                msg = (
+                    f"Processing ({current_method_idx + 1} / "
+                    f"{len(selected_methods)}) **{method}**...\n\n"
+                )
+            except ValueError:
+                msg = gr.update()
+
+            return msg
 
         def process_method(input_file, selected_methods, method=method):
+            if input_file is None:
+                raise ValueError("Please upload a PDF file first!")
             return convert_document(
                 input_file, method=method, enabled=method in selected_methods
             )
 
         click_event = click_event.then(
-            fn=lambda idx=idx, method=method: progress_message(idx, method),
+            fn=lambda methods, method=method: progress_message(methods, method),
+            inputs=[methods],
             outputs=[progress_status],
         ).then(
             fn=lambda input_file, methods, method=method: process_method(

@@ -8,11 +8,13 @@ from marker.models import create_model_dict
 from marker.output import text_from_rendered
 from marker.settings import settings
 
+from .settings import ENABLE_DEBUG_MODE
+
 # Marker init
 marker_converter = PdfConverter(
     artifact_dict=create_model_dict(),
     config={
-        "debug_pdf_images": True,
+        "debug_pdf_images": ENABLE_DEBUG_MODE,
     },
 )
 

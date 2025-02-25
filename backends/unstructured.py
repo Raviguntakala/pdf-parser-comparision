@@ -5,6 +5,8 @@ from matplotlib import font_manager
 from unstructured.partition.pdf import partition_pdf
 from unstructured.partition.pdf_image.analysis import bbox_visualisation
 
+from .settings import ENABLE_DEBUG_MODE
+
 UNSTRUCTURED_DEBUG_PATH = Path("/tmp/unstructured")
 
 
@@ -59,7 +61,7 @@ def convert_unstructured(path: str, file_name: str):
         # extract_images_in_pdf=True,
         extract_image_block_types=["Image", "Table"],
         extract_image_block_to_payload=True,
-        analysis=True,
+        analysis=ENABLE_DEBUG_MODE,
         analyzed_image_output_dir_path=UNSTRUCTURED_DEBUG_PATH,
     )
     text = convert_elements_to_markdown(elements)
