@@ -27,7 +27,7 @@ def convert_document(path, method, enabled=True):
     if enabled:
         print("Processing file", path, "with method", method)
     else:
-        return "", "", []
+        return "", "", "", []
 
     # benchmarking
     start = time.time()
