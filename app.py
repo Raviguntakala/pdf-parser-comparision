@@ -79,7 +79,7 @@ latex_delimiters = [
 # startup test (also for loading models the first time)
 start_startup = time.time()
 WARMUP_PDF_PATH = "table.pdf"
-SUPPORTED_METHODS = ["Docling", "Marker", "Unstructured", "MinerU", "PyMuPDF"]
+SUPPORTED_METHODS = ["PyMuPDF", "Docling", "Marker", "MinerU", "Unstructured"]
 
 print("Warm-up sequence")
 for method in SUPPORTED_METHODS:

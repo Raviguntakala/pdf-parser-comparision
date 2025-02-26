@@ -5,6 +5,7 @@ colorFrom: blue
 colorTo: green
 sdk: docker
 pinned: false
+header: mini
 short_description: Convert PDFs to Markdown with open-source parsers
 ---
 

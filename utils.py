@@ -57,6 +57,7 @@ def prepare_env_mineru():
 
     # download nltk data
     nltk.download("punkt_tab")
+    nltk.download("averaged_perceptron_tagger_eng")
 
     # download models
     os.system(
