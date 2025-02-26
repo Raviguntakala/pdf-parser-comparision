@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     build-essential \
     python3.10-dev \
     python3-pip \
+    wget \
     git \
     ffmpeg \
     poppler-utils \

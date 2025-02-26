@@ -1,6 +1,7 @@
-from utils import fix_problematic_imports
+from utils import fix_problematic_imports, prepare_env_mineru
 
 fix_problematic_imports()  # noqa
+prepare_env_mineru()  # noqa
 
 
 import time

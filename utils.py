@@ -47,3 +47,39 @@ def fix_problematic_imports():
     sys.modules[
         "magic_pdf.model.sub_modules.mfr.unimernet.Unimernet"
     ] = fake_unimernet_module
+
+
+def prepare_env_mineru():
+    import json
+    import os
+
+    import nltk
+
+    # download nltk data
+    nltk.download("punkt_tab")
+
+    # download models
+    os.system(
+        "wget https://github.com/opendatalab/MinerU/raw/"
+        "dev/scripts/download_models_hf.py -O download_models_hf.py"
+    )
+    os.system("python3 download_models_hf.py")
+
+    home_path = Path.home()
+    config_path = str(home_path / "magic-pdf.json")
+
+    with open(config_path, "r") as file:
+        data = json.load(file)
+
+    data["device-mode"] = "cuda"
+    with open(config_path, "w") as file:
+        json.dump(data, file, indent=4)
+
+    os.system(
+        f"cp -r resources {home_path}/.local/lib/"
+        "python3.10/site-packages/magic_pdf/resources"
+    )
+
+    # copy OCR model weight
+    target_model_path = home_path / ".paddleocr"
+    os.system(f"cp -r paddleocr {target_model_path}")
