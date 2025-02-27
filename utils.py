@@ -59,15 +59,19 @@ def prepare_env_mineru():
     nltk.download("punkt_tab")
     nltk.download("averaged_perceptron_tagger_eng")
 
+    home_path = Path.home()
+    config_path = home_path / "magic-pdf.json"
+    # skip download if config file exists
+    if config_path.exists():
+        print("Config file exists, skipping models download")
+        return
+
     # download models
     os.system(
         "wget https://github.com/opendatalab/MinerU/raw/"
         "dev/scripts/download_models_hf.py -O download_models_hf.py"
     )
     os.system("python3 download_models_hf.py")
-
-    home_path = Path.home()
-    config_path = str(home_path / "magic-pdf.json")
 
     with open(config_path, "r") as file:
         data = json.load(file)

@@ -97,7 +97,6 @@ with gr.Blocks(
     output_components = []
     output_tabs = []
     visualization_sub_tabs = []
-    first_method = SUPPORTED_METHODS[0]
 
     with gr.Row():
         with gr.Column(variant="panel", scale=5):
@@ -114,12 +113,12 @@ with gr.Blocks(
                 methods = gr.Dropdown(
                     SUPPORTED_METHODS,
                     label="Conversion methods",
-                    value=first_method,
+                    value=SUPPORTED_METHODS[:2],
                     multiselect=True,
                 )
             with gr.Row():
                 visual_checkbox = gr.Checkbox(
-                    label="Enable debug visualizations",
+                    label="Enable debug visualization",
                     visible=ENABLE_DEBUG_MODE,
                     value=True,
                 )
@@ -141,7 +140,7 @@ with gr.Blocks(
                 for method in SUPPORTED_METHODS:
                     with gr.Tab(method, visible=False) as output_tab:
                         with gr.Tabs():
-                            with gr.Tab("Markdown rendering"):
+                            with gr.Tab("Markdown render"):
                                 markdown_render = gr.Markdown(
                                     label="Markdown rendering",
                                     height=900,
@@ -149,21 +148,26 @@ with gr.Blocks(
                                     line_breaks=True,
                                     latex_delimiters=latex_delimiters,
                                 )
+                            with gr.Tab("Markdown text"):
+                                markdown_text = gr.TextArea(
+                                    lines=45, show_label=False, container=False
+                                )
                             with gr.Tab(
-                                "Debug visualizations",
+                                "Debug visualization",
                                 visible=ENABLE_DEBUG_MODE,
                             ) as visual_sub_tab:
+                                output_description = gr.Markdown(
+                                    container=False,
+                                    show_label=False,
+                                )
                                 debug_images = gr.Gallery(
                                     show_label=False,
                                     container=False,
                                     interactive=False,
                                 )
-                            with gr.Tab("Raw text"):
-                                markdown_text = gr.TextArea(
-                                    lines=45, show_label=False, container=False
-                                )
-                            with gr.Tab("Reference"):
-                                output_description = gr.Markdown(
+                            with gr.Tab("About"):
+                                gr.Markdown(
+                                    "About method",
                                     container=False,
                                     show_label=False,
                                 )
