@@ -41,7 +41,7 @@ def do_process_mineru(input_path, output_dir):
 
     pdf_data = read_fn(input_path)
     parse_method = "auto"
-    local_image_dir, local_md_dir = prepare_env(output_dir, file_name, parse_method)
+    _, local_md_dir = prepare_env(output_dir, file_name, parse_method)
     do_parse(
         output_dir,
         file_name,
@@ -51,7 +51,7 @@ def do_process_mineru(input_path, output_dir):
         debug_able=False,
         f_dump_orig_pdf=False,
         f_draw_layout_bbox=ENABLE_DEBUG_MODE,
-        f_draw_char_bbox=ENABLE_DEBUG_MODE,
+        f_draw_char_bbox=False,
         formula_enable=False,
         table_enable=True,
     )

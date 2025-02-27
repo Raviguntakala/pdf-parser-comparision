@@ -465,3 +465,4 @@ S.gpg-agent*
 .vscode/settings.json
 examples/example1/assets
 storage/*
+debug_data/*

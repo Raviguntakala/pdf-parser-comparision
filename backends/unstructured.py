@@ -58,7 +58,6 @@ def convert_unstructured(path: str, file_name: str):
         # mandatory to use ``hi_res`` strategy
         strategy="hi_res",
         infer_table_structure=True,
-        # extract_images_in_pdf=True,
         extract_image_block_types=["Image", "Table"],
         extract_image_block_to_payload=True,
         analysis=ENABLE_DEBUG_MODE,
