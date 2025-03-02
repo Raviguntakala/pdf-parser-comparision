@@ -16,7 +16,7 @@ transformers<5.0.0,>=4.45.2
 struct-eqtable==0.3.2
 doclayout_yolo==0.0.2b1
 openai
-opencv-contrib-python
-gmft
-img2table
 sycamore-ai[local-inference]
+img2table
+gmft
+opencv-contrib-python
