@@ -18,3 +18,4 @@ doclayout_yolo==0.0.2b1
 openai
 opencv-contrib-python
 gmft
+img2table
