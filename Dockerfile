@@ -31,7 +31,7 @@ ENV HOME=/home/user \
     PYTHONUNBUFFERED=1 \
     GRADIO_SERVER_NAME=0.0.0.0
 
-RUN pip3 install --no-cache-dir --upgrade -r /code/requirements.txt
+RUN pip3 install --use-deprecated=legacy-resolver --no-cache-dir --upgrade -r /code/requirements.txt
 
 # Set the working directory to the user's home directory
 WORKDIR $HOME/app

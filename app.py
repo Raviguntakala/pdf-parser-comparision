@@ -22,6 +22,7 @@ from backends import (  # convert_zerox,
     convert_img2table,
     convert_marker,
     convert_mineru,
+    convert_sycamore,
     convert_unstructured,
 )
 from backends.settings import ENABLE_DEBUG_MODE
@@ -65,6 +66,8 @@ def convert_document(path, method, start_page=0, enabled=True):
         text, debug_image_paths = convert_mineru(path, file_name)
     elif method == "Gemini (API)":
         text, debug_image_paths = convert_gemini(path, file_name)
+    elif method == "Sycamore":
+        text, debug_image_paths = convert_sycamore(path, file_name)
     # elif method == "Zerox":
     #     text, debug_image_paths = convert_zerox(path, file_name)
     elif method == "Img2Table":
@@ -155,6 +158,7 @@ SUPPORTED_METHODS = [
     "Gemini (API)",
     "Img2Table",
     "GMFT",
+    "Sycamore",
     # "Zerox"
 ]
 

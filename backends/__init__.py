@@ -4,6 +4,7 @@ from .gmft import convert_gmft
 from .img2table import convert_img2table
 from .marker import convert_marker
 from .mineru import convert_mineru
+from .syca import convert_sycamore
 from .unstructured import convert_unstructured
 
 # from .zerox import convert_zerox
@@ -17,4 +18,5 @@ __all__ = [
     # "convert_zerox",
     "convert_img2table",
     "convert_gmft",
+    "convert_sycamore",
 ]

@@ -19,3 +19,4 @@ openai
 opencv-contrib-python
 gmft
 img2table
+sycamore-ai[local-inference]
