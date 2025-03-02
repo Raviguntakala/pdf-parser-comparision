@@ -5,7 +5,12 @@ from google import genai
 from google.genai import types
 
 # Create a client
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY", ""))
+try:
+    client = genai.Client(api_key=os.getenv("GEMINI_API_KEY", ""))
+except Exception as e:
+    print(e)
+    client = None
+
 MODEL_NAME = "gemini-2.0-flash"
 PROMPT = """
 Convert the following document to markdown, preserving header, table and figure structure as much as possible.
@@ -28,16 +33,20 @@ def convert_gemini(path: str, file_name: str):
     generation_config = types.GenerationConfig(
         max_output_tokens=8192,
     ).to_json_dict()
-    response = client.models.generate_content(
-        model=MODEL_NAME,
-        contents=[
-            PROMPT,
-            types.Part.from_bytes(
-                data=Path(path).read_bytes(),
-                mime_type="application/pdf",
-            ),
-        ],
-        config=generation_config,
-    )
+    if client:
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents=[
+                PROMPT,
+                types.Part.from_bytes(
+                    data=Path(path).read_bytes(),
+                    mime_type="application/pdf",
+                ),
+            ],
+            config=generation_config,
+        )
+        output = response.text
+    else:
+        output = "Error: Gemini API not available."
     # Convert the response to the pydantic model and return it
-    return response.text, []
+    return output, []
