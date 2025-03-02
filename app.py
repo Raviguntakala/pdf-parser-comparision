@@ -15,7 +15,7 @@ import gradio as gr
 import pymupdf4llm
 from gradio_pdf import PDF
 
-from backends import (
+from backends import (  # convert_zerox,
     convert_docling,
     convert_gemini,
     convert_gmft,
@@ -23,7 +23,6 @@ from backends import (
     convert_marker,
     convert_mineru,
     convert_unstructured,
-    convert_zerox,
 )
 from backends.settings import ENABLE_DEBUG_MODE
 from utils import remove_images_from_markdown, trim_pages
@@ -66,8 +65,8 @@ def convert_document(path, method, start_page=0, enabled=True):
         text, debug_image_paths = convert_mineru(path, file_name)
     elif method == "Gemini (API)":
         text, debug_image_paths = convert_gemini(path, file_name)
-    elif method == "Zerox":
-        text, debug_image_paths = convert_zerox(path, file_name)
+    # elif method == "Zerox":
+    #     text, debug_image_paths = convert_zerox(path, file_name)
     elif method == "Img2Table":
         text, debug_image_paths = convert_img2table(path, file_name)
     elif method == "GMFT":
