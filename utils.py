@@ -14,14 +14,14 @@ def remove_images_from_markdown(markdown_text):
 
 
 @functools.lru_cache(maxsize=None)
-def trim_pages(pdf_path, output_path, trim_pages=5):
+def trim_pages(pdf_path, output_path, start_page=0, trim_pages=5):
     doc = pymupdf.open(pdf_path)
     parent_dir_name = Path(pdf_path).parent.name
     output_file_path = Path(output_path) / f"{parent_dir_name}.pdf"
 
     num_pages = len(doc)
     if num_pages > trim_pages:
-        to_select = list(range(trim_pages))
+        to_select = list(range(start_page, min(start_page + trim_pages, num_pages)))
         doc.select(to_select)
         doc.ez_save(output_file_path)
         print("Trimmed pdf to with pages", to_select, "path", output_file_path)

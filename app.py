@@ -1,3 +1,7 @@
+import os
+import zipfile
+from collections import defaultdict
+
 from utils import fix_problematic_imports, prepare_env_mineru
 
 fix_problematic_imports()  # noqa
@@ -13,18 +17,23 @@ from gradio_pdf import PDF
 
 from backends import (
     convert_docling,
+    convert_gemini,
+    convert_gmft,
+    convert_img2table,
     convert_marker,
     convert_mineru,
     convert_unstructured,
+    convert_zerox,
 )
 from backends.settings import ENABLE_DEBUG_MODE
 from utils import remove_images_from_markdown, trim_pages
 
 TRIMMED_PDF_PATH = Path("/tmp/trimmed_input")
 TRIMMED_PDF_PATH.mkdir(exist_ok=True)
+DO_WARMUP = os.getenv("DO_WARMUP", "True").lower() == "true"
 
 
-def convert_document(path, method, enabled=True):
+def convert_document(path, method, start_page=0, enabled=True):
     if enabled:
         print("Processing file", path, "with method", method)
     else:
@@ -33,7 +42,11 @@ def convert_document(path, method, enabled=True):
     # benchmarking
     start = time.time()
 
-    path = trim_pages(path, output_path=TRIMMED_PDF_PATH)
+    path = trim_pages(
+        path,
+        output_path=TRIMMED_PDF_PATH,
+        start_page=start_page,
+    )
     file_name = Path(path).stem
     debug_image_paths = []
     text = "unknown method"
@@ -51,6 +64,16 @@ def convert_document(path, method, enabled=True):
         )
     elif method == "MinerU":
         text, debug_image_paths = convert_mineru(path, file_name)
+    elif method == "Gemini (API)":
+        text, debug_image_paths = convert_gemini(path, file_name)
+    elif method == "Zerox":
+        text, debug_image_paths = convert_zerox(path, file_name)
+    elif method == "Img2Table":
+        text, debug_image_paths = convert_img2table(path, file_name)
+    elif method == "GMFT":
+        text, debug_image_paths = convert_gmft(path, file_name)
+    else:
+        raise ValueError(f"Unsupported method: {method}")
 
     duration = time.time() - start
     duration_message = f"Conversion with {method} took *{duration:.2f} seconds*"
@@ -60,6 +83,51 @@ def convert_document(path, method, enabled=True):
         text,
         remove_images_from_markdown(text),
         debug_image_paths,
+    )
+
+
+def to_zip_file(file_path, methods, *output_components):
+    markdown_text_dict = dict()
+    debug_images_dict = defaultdict(list)
+    for idx, method_name in enumerate(SUPPORTED_METHODS):
+        if method_name not in methods:
+            continue
+
+        markdown_text = output_components[idx * 4 + 2]
+        debug_images = output_components[idx * 4 + 3]
+
+        markdown_text_dict[method_name] = markdown_text
+        debug_images_dict[method_name] = debug_images
+
+    # create new temp directory using Python's tempfile module
+    temp_dir = Path(file_path).parent
+    zip_file_path = temp_dir / "output.zip"
+
+    markdown_path = temp_dir / f"{method_name}.md"
+    with open(markdown_path, "w") as f:
+        f.write(markdown_text)
+
+    # create a zip file in write mode
+    with zipfile.ZipFile(zip_file_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+        for method_name, markdown_text in markdown_text_dict.items():
+            debug_image_paths = debug_images_dict[method_name]
+
+            # write the markdown text to the zip file
+            zipf.write(
+                markdown_path,
+                f"{method_name}/{method_name}.md",
+            )
+            if debug_image_paths:
+                for idx, (debug_image_path, _) in enumerate(debug_image_paths):
+                    debug_image_name = Path(debug_image_path).name
+                    zipf.write(
+                        debug_image_path,
+                        f"{method_name}/{debug_image_name}",
+                    )
+
+    return gr.update(
+        value=str(zip_file_path),
+        visible=True,
     )
 
 
@@ -79,14 +147,25 @@ latex_delimiters = [
 # startup test (also for loading models the first time)
 start_startup = time.time()
 WARMUP_PDF_PATH = "table.pdf"
-SUPPORTED_METHODS = ["PyMuPDF", "Docling", "Marker", "MinerU", "Unstructured"]
+SUPPORTED_METHODS = [
+    "PyMuPDF",
+    "Docling",
+    "Marker",
+    "MinerU",
+    "Unstructured",
+    "Gemini (API)",
+    "Img2Table",
+    "GMFT",
+    # "Zerox"
+]
 
-print("Warm-up sequence")
-for method in SUPPORTED_METHODS:
-    for _ in range(1):
-        convert_document(WARMUP_PDF_PATH, method)
-startup_duration = time.time() - start_startup
-print(f"Total start-up time: {startup_duration:.2f} seconds")
+if DO_WARMUP:
+    print("Warm-up sequence")
+    for method in SUPPORTED_METHODS:
+        for _ in range(1):
+            convert_document(WARMUP_PDF_PATH, method)
+    startup_duration = time.time() - start_startup
+    print(f"Total start-up time: {startup_duration:.2f} seconds")
 
 with gr.Blocks(
     theme=gr.themes.Ocean(),
@@ -106,7 +185,28 @@ with gr.Blocks(
                     ".pdf",
                 ],
             )
+            with gr.Accordion(
+                "Advanced settings",
+                open=False,
+            ):
+                start_page = gr.Number(
+                    label="Starting page (only max 5 consecutive pages are processed)",
+                    minimum=1,
+                    maximum=100,
+                    step=1,
+                    value=1,
+                )
+                visual_checkbox = gr.Checkbox(
+                    label="Enable debug visualization",
+                    visible=ENABLE_DEBUG_MODE,
+                    value=True,
+                )
             progress_status = gr.Markdown("", show_label=False, container=False)
+            output_file = gr.File(
+                label="Download output",
+                interactive=False,
+                visible=False,
+            )
 
         with gr.Column(variant="panel", scale=5):
             with gr.Row():
@@ -115,12 +215,6 @@ with gr.Blocks(
                     label="Conversion methods",
                     value=SUPPORTED_METHODS[:2],
                     multiselect=True,
-                )
-            with gr.Row():
-                visual_checkbox = gr.Checkbox(
-                    label="Enable debug visualization",
-                    visible=ENABLE_DEBUG_MODE,
-                    value=True,
                 )
             with gr.Row():
                 convert_btn = gr.Button("Convert", variant="primary", scale=2)
@@ -210,11 +304,14 @@ with gr.Blocks(
 
             return msg
 
-        def process_method(input_file, selected_methods, method=method):
+        def process_method(input_file, start_page, selected_methods, method=method):
             if input_file is None:
                 raise ValueError("Please upload a PDF file first!")
             return convert_document(
-                input_file, method=method, enabled=method in selected_methods
+                input_file,
+                method=method,
+                start_page=start_page - 1,
+                enabled=method in selected_methods,
             )
 
         click_event = click_event.then(
@@ -222,24 +319,34 @@ with gr.Blocks(
             inputs=[methods],
             outputs=[progress_status],
         ).then(
-            fn=lambda input_file, methods, method=method: process_method(
-                input_file, methods, method
+            fn=lambda input_file, start_page, methods, method=method: process_method(
+                input_file, start_page, methods, method
             ),
-            inputs=[input_file, methods],
+            inputs=[input_file, start_page, methods],
             outputs=output_components[idx * 4 : (idx + 1) * 4],
         )
 
-    click_event.then(
-        lambda: "All tasks completed.",
-        outputs=[progress_status],
+    click_event.then(lambda: "All tasks completed.", outputs=[progress_status],).then(
+        fn=to_zip_file,
+        inputs=[
+            input_file,
+            methods,
+        ]
+        + output_components,
+        outputs=[output_file],
     )
 
     clear_btn.add(
         [
             input_file,
             pdf_preview,
+            output_file,
         ]
         + output_components
+    )
+    clear_btn.click(
+        fn=lambda: gr.update(visible=False),
+        outputs=[output_file],
     )
 
     visual_checkbox.change(
@@ -248,4 +355,7 @@ with gr.Blocks(
         outputs=visualization_sub_tabs,
     )
 
-    demo.launch(show_error=True)
+    demo.launch(
+        show_error=True,
+        max_file_size="50mb",
+    )

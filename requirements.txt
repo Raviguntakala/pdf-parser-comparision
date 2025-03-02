@@ -14,5 +14,7 @@ unstructured[pdf]
 ultralytics>=8.3.48
 transformers<5.0.0,>=4.45.2
 struct-eqtable==0.3.2
-openai
 doclayout_yolo==0.0.2b1
+openai
+opencv-contrib-python
+gmft
