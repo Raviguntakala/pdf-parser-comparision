@@ -70,9 +70,9 @@ def convert_document(path, method, start_page=0, enabled=True):
         text, debug_image_paths = convert_sycamore(path, file_name)
     # elif method == "Zerox":
     #     text, debug_image_paths = convert_zerox(path, file_name)
-    elif method == "Img2Table":
+    elif method == "Img2Table (table-only)":
         text, debug_image_paths = convert_img2table(path, file_name)
-    elif method == "GMFT":
+    elif method == "GMFT (table-only)":
         text, debug_image_paths = convert_gmft(path, file_name)
     else:
         raise ValueError(f"Unsupported method: {method}")
@@ -148,7 +148,7 @@ latex_delimiters = [
 
 # startup test (also for loading models the first time)
 start_startup = time.time()
-WARMUP_PDF_PATH = "table.pdf"
+WARMUP_PDF_PATH = "examples/table.pdf"
 SUPPORTED_METHODS = [
     "PyMuPDF",
     "Docling",
@@ -156,8 +156,8 @@ SUPPORTED_METHODS = [
     "MinerU",
     "Unstructured",
     "Gemini (API)",
-    "Img2Table",
-    "GMFT",
+    "Img2Table (table-only)",
+    "GMFT (table-only)",
     "Sycamore",
     # "Zerox"
 ]
@@ -188,21 +188,15 @@ with gr.Blocks(
                     ".pdf",
                 ],
             )
-            with gr.Accordion(
-                "Advanced settings",
-                open=False,
-            ):
-                start_page = gr.Number(
-                    label="Starting page (only max 5 consecutive pages are processed)",
-                    minimum=1,
-                    maximum=100,
-                    step=1,
-                    value=1,
-                )
-                visual_checkbox = gr.Checkbox(
-                    label="Enable debug visualization",
-                    visible=ENABLE_DEBUG_MODE,
-                    value=True,
+            with gr.Accordion("Examples:"):
+                example_root = os.path.join(os.path.dirname(__file__), "examples")
+                gr.Examples(
+                    examples=[
+                        os.path.join(example_root, _)
+                        for _ in os.listdir(example_root)
+                        if _.endswith("pdf")
+                    ],
+                    inputs=input_file,
                 )
             progress_status = gr.Markdown("", show_label=False, container=False)
             output_file = gr.File(
@@ -219,6 +213,26 @@ with gr.Blocks(
                     value=SUPPORTED_METHODS[:2],
                     multiselect=True,
                 )
+            with gr.Row():
+                with gr.Accordion(
+                    "Advanced settings",
+                    open=False,
+                ):
+                    start_page = gr.Number(
+                        label=(
+                            "Starting page (only max 5 "
+                            "consecutive pages are processed)"
+                        ),
+                        minimum=1,
+                        maximum=100,
+                        step=1,
+                        value=1,
+                    )
+                    visual_checkbox = gr.Checkbox(
+                        label="Enable debug visualization",
+                        visible=ENABLE_DEBUG_MODE,
+                        value=True,
+                    )
             with gr.Row():
                 convert_btn = gr.Button("Convert", variant="primary", scale=2)
                 clear_btn = gr.ClearButton(value="Clear", scale=1)
@@ -358,7 +372,7 @@ with gr.Blocks(
         outputs=visualization_sub_tabs,
     )
 
-    demo.launch(
+    demo.queue(default_concurrency_limit=2,).launch(
         show_error=True,
         max_file_size="50mb",
     )
