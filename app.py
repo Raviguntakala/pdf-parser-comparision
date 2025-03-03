@@ -381,7 +381,7 @@ with gr.Blocks(
         outputs=visualization_sub_tabs,
     )
 
-    demo.queue(default_concurrency_limit=2,).launch(
+    demo.queue(default_concurrency_limit=1).launch(
         show_error=True,
         max_file_size="50mb",
     )

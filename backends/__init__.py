@@ -28,10 +28,10 @@ SUPPORTED_METHODS = [
     "Marker",
     "MinerU",
     "Unstructured",
+    "Sycamore",
     "Gemini (API)",
     "Img2Table (table-only)",
     "GMFT (table-only)",
-    "Sycamore",
     # "Zerox"
 ]
 SUPPORTED_METHODS_METADATA = {
