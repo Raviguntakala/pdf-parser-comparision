@@ -2,9 +2,8 @@ import os
 import zipfile
 from collections import defaultdict
 
-from utils import fix_problematic_imports, prepare_env_mineru
+from utils import prepare_env_mineru
 
-fix_problematic_imports()  # noqa
 prepare_env_mineru()  # noqa
 
 

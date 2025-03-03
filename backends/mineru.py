@@ -52,8 +52,7 @@ def do_process_mineru(input_path, output_dir):
         f_dump_orig_pdf=False,
         f_draw_layout_bbox=ENABLE_DEBUG_MODE,
         f_draw_char_bbox=False,
-        formula_enable=False,
-        # disable formula recognition due to dependency issue
+        formula_enable=True,
         table_enable=True,
     )
     return local_md_dir, file_name
