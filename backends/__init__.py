@@ -65,12 +65,6 @@ SUPPORTED_METHODS_METADATA = {
         "url": "https://github.com/pymupdf/PyMuPDF",
         "documentation": "https://pymupdf.readthedocs.io/en/latest/pymupdf4llm/index.html",
     },
-    "PyMuPDF": {
-        "name": "PyMuPDF",
-        "description": "PyMuPDF is a high performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents.",
-        "url": "https://github.com/pymupdf/PyMuPDF",
-        "documentation": "https://pymupdf.readthedocs.io/en/latest/pymupdf4llm/index.html",
-    },
     "Gemini (API)": {
         "name": "Gemini",
         "description": "Using Gemini multimodal API to parse PDF to markdown.",
