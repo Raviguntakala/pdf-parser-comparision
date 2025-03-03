@@ -20,6 +20,7 @@ pipeline_options = PdfPipelineOptions()
 pipeline_options.accelerator_options = accelerator_options
 pipeline_options.do_ocr = True
 pipeline_options.do_table_structure = True
+pipeline_options.do_formula_enrichment = True
 pipeline_options.generate_picture_images = True
 pipeline_options.images_scale = 2.0
 
