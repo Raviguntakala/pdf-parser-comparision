@@ -21,6 +21,7 @@ paritioner = ArynPartitioner(
     extract_table_structure=True,
     use_ocr=True,
     extract_images=True,
+    device="cpu",
 )
 context = sycamore.init(
     exec_mode=ExecMode.LOCAL,
