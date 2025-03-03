@@ -16,6 +16,8 @@ import pymupdf4llm
 from gradio_pdf import PDF
 
 from backends import (  # convert_zerox,
+    SUPPORTED_METHODS,
+    SUPPORTED_METHODS_METADATA,
     convert_docling,
     convert_gemini,
     convert_gmft,
@@ -149,18 +151,6 @@ latex_delimiters = [
 # startup test (also for loading models the first time)
 start_startup = time.time()
 WARMUP_PDF_PATH = "examples/table.pdf"
-SUPPORTED_METHODS = [
-    "PyMuPDF",
-    "Docling",
-    "Marker",
-    "MinerU",
-    "Unstructured",
-    "Gemini (API)",
-    "Img2Table (table-only)",
-    "GMFT (table-only)",
-    "Sycamore",
-    # "Zerox"
-]
 
 if DO_WARMUP:
     print("Warm-up sequence")
@@ -277,8 +267,27 @@ with gr.Blocks(
                                     interactive=False,
                                 )
                             with gr.Tab("About"):
+                                method_metadata = SUPPORTED_METHODS_METADATA[
+                                    method
+                                ]  # type: ignore
+                                method_name = method_metadata["name"]  # type: ignore
+                                method_description = method_metadata[
+                                    "description"
+                                ]  # type: ignore
+                                method_url = method_metadata["url"]  # type: ignore
+                                method_documentation = method_metadata[
+                                    "documentation"
+                                ]  # type: ignore
                                 gr.Markdown(
-                                    "About method",
+                                    value=(
+                                        f"# {method_name}\n\n{method_description}\n\n"
+                                        + (
+                                            f"[[Github repo]]({method_url})    "
+                                            if method_url
+                                            else ""
+                                        )
+                                        + f"[[Documentation]]({method_documentation})"
+                                    ),
                                     container=False,
                                     show_label=False,
                                 )
