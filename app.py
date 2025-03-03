@@ -2,8 +2,9 @@ import os
 import zipfile
 from collections import defaultdict
 
-from utils import prepare_env_mineru
+from utils import patch_unimernet_model, prepare_env_mineru
 
+patch_unimernet_model()  # noqa
 prepare_env_mineru()  # noqa
 
 

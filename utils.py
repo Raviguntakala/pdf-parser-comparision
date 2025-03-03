@@ -31,6 +31,21 @@ def trim_pages(pdf_path, output_path, start_page=0, trim_pages=5):
     return str(output_file_path)
 
 
+def patch_unimernet_model():
+    from unimernet.models.unimernet.encoder_decoder import CustomMBartForCausalLM
+
+    # Save the original __init__ method
+    original_init = CustomMBartForCausalLM.__init__
+
+    # Define a new __init__ method
+    def new_init(self, config):
+        config._attn_implementation = "eager"
+        original_init(self, config)
+
+    # Monkey patch the __init__ method
+    CustomMBartForCausalLM.__init__ = new_init
+
+
 def fix_problematic_imports():
     import sys
     import types
