@@ -145,7 +145,6 @@ def show_tabs(selected_methods):
 
 latex_delimiters = [
     {"left": "$$", "right": "$$", "display": True},
-    {"left": "$", "right": "$", "display": False},
 ]
 
 # startup test (also for loading models the first time)
@@ -244,9 +243,8 @@ with gr.Blocks(
                             with gr.Tab("Markdown render"):
                                 markdown_render = gr.Markdown(
                                     label="Markdown rendering",
-                                    height=900,
+                                    height=800,
                                     show_copy_button=True,
-                                    line_breaks=True,
                                     latex_delimiters=latex_delimiters,
                                 )
                             with gr.Tab("Markdown text"):
