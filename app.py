@@ -33,7 +33,8 @@ from utils import remove_images_from_markdown, trim_pages
 TRIMMED_PDF_PATH = Path("/tmp/trimmed_input")
 TRIMMED_PDF_PATH.mkdir(exist_ok=True)
 DO_WARMUP = os.getenv("DO_WARMUP", "True").lower() == "true"
-MAX_SELECTED_METHODS = 5
+MAX_SELECTED_METHODS = int(os.getenv("MAX_SELECTED_METHODS", "6"))
+MAX_PAGES = int(os.getenv("MAX_PAGES", "5"))
 
 
 def convert_document(path, method, start_page=0, enabled=True):
@@ -49,6 +50,7 @@ def convert_document(path, method, start_page=0, enabled=True):
         path,
         output_path=TRIMMED_PDF_PATH,
         start_page=start_page,
+        trim_pages=MAX_PAGES,
     )
     file_name = Path(path).stem
     debug_image_paths = []
