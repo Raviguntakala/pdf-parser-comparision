@@ -33,6 +33,7 @@ from utils import remove_images_from_markdown, trim_pages
 TRIMMED_PDF_PATH = Path("/tmp/trimmed_input")
 TRIMMED_PDF_PATH.mkdir(exist_ok=True)
 DO_WARMUP = os.getenv("DO_WARMUP", "True").lower() == "true"
+MAX_SELECTED_METHODS = 5
 
 
 def convert_document(path, method, start_page=0, enabled=True):
@@ -198,7 +199,9 @@ with gr.Blocks(
             with gr.Row():
                 methods = gr.Dropdown(
                     SUPPORTED_METHODS,
-                    label="Conversion methods",
+                    label=(
+                        "Conversion methods " f"(select up-to {MAX_SELECTED_METHODS})"
+                    ),
                     value=SUPPORTED_METHODS[:2],
                     multiselect=True,
                 )
@@ -234,6 +237,18 @@ with gr.Blocks(
                 visible=True,
                 height=800,
             )
+            with gr.Accordion("Notes", open=False):
+                gr.Markdown(
+                    container=False,
+                    show_label=False,
+                    value=(
+                        "- Use the playground for non-sensitive data only.\n"
+                        "- Figure and formular extraction might not work properly with some methods (we are working on that!).\n"  # noqa
+                        "- Some methods (e.g: Gemini) may use external API to process the document.\n"  # noqa
+                        "- Some methods (e.g: Unstructured) may has longer processing time due to not utilizing GPU resource, be patient!\n"  # noqa
+                        "- If you have suggestion for better default configuration of current methods, please let us know!\n"  # noqa
+                    ),
+                )
 
         with gr.Column(variant="panel", scale=5):
             with gr.Tabs():
@@ -302,7 +317,19 @@ with gr.Blocks(
                     visualization_sub_tabs.append(visual_sub_tab)
 
     input_file.change(fn=lambda x: x, inputs=input_file, outputs=pdf_preview)
+
+    def check_preconditions(input_file, selected_methods):
+        if len(selected_methods) > MAX_SELECTED_METHODS:
+            raise ValueError(
+                "Please select up-to " f"{MAX_SELECTED_METHODS} methods only!"
+            )
+        if input_file is None:
+            raise ValueError("Please upload a PDF file first!")
+
     click_event = convert_btn.click(
+        fn=check_preconditions,
+        inputs=[input_file, methods],
+    ).success(
         fn=show_tabs,
         inputs=[methods],
         outputs=output_tabs,
@@ -329,8 +356,6 @@ with gr.Blocks(
             return msg
 
         def process_method(input_file, start_page, selected_methods, method=method):
-            if input_file is None:
-                raise ValueError("Please upload a PDF file first!")
             return convert_document(
                 input_file,
                 method=method,
