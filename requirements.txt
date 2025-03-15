@@ -18,6 +18,7 @@ openai
 sycamore-ai[local-inference]
 img2table
 gmft
-opencv-contrib-python
 unimernet==0.2.3
 transformers<5.0.0,>=4.45.2
+pypdf
+opencv-contrib-python

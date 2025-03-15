@@ -24,6 +24,7 @@ from backends import (  # convert_zerox,
     convert_img2table,
     convert_marker,
     convert_mineru,
+    convert_pypdf,
     convert_sycamore,
     convert_unstructured,
 )
@@ -79,6 +80,8 @@ def convert_document(path, method, start_page=0, enabled=True):
         text, debug_image_paths = convert_img2table(path, file_name)
     elif method == "GMFT (table-only)":
         text, debug_image_paths = convert_gmft(path, file_name)
+    elif method == "PyPDF":
+        text, debug_image_paths = convert_pypdf(path, file_name)
     else:
         raise ValueError(f"Unsupported method: {method}")
 

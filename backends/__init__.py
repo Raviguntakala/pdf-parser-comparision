@@ -5,6 +5,7 @@ from .gmft import convert_gmft
 from .img2table import convert_img2table
 from .marker import convert_marker
 from .mineru import convert_mineru
+from .pypdf import convert_pypdf
 from .syca import convert_sycamore
 from .unstructured import convert_unstructured
 
@@ -20,6 +21,8 @@ __all__ = [
     "convert_img2table",
     "convert_gmft",
     "convert_sycamore",
+    "convert_pypdf",
+    # "convert_zerox",
 ]
 
 SUPPORTED_METHODS = [
@@ -32,6 +35,7 @@ SUPPORTED_METHODS = [
     "Gemini (API)",
     "Img2Table (table-only)",
     "GMFT (table-only)",
+    "PyPDF",
     # "Zerox"
 ]
 SUPPORTED_METHODS_METADATA = {
@@ -88,5 +92,11 @@ SUPPORTED_METHODS_METADATA = {
         "description": "Sycamore is an open source, AI-powered document processing engine for ETL, RAG, LLM-based applications, and analytics on unstructured data.",
         "url": "https://github.com/aryn-ai/sycamore",
         "documentation": "https://sycamore.readthedocs.io/en/stable/",
+    },
+    "PyPDF": {
+        "name": "PyPDF",
+        "description": "PyPDF is a pure-Python PDF toolkit that can help you read, write, and manipulate PDF documents.",
+        "url": "https://github.com/py-pdf/pypdf",
+        "documentation": "https://pypdf.readthedocs.io/en/stable",
     },
 }
