@@ -6,11 +6,18 @@ from pathlib import Path
 from marker.converters.pdf import PdfConverter
 from marker.models import create_model_dict
 from marker.output import text_from_rendered
+from marker.processors.equation import EquationProcessor
 from marker.settings import settings
 
-from .settings import ENABLE_DEBUG_MODE
+from .settings import ENABLE_DEBUG_MODE, ENABLE_FORMULA
 
 # Marker init
+if not ENABLE_FORMULA:
+    PdfConverter.default_processors = (
+        processor
+        for processor in PdfConverter.default_processors
+        if processor != EquationProcessor
+    )
 marker_converter = PdfConverter(
     artifact_dict=create_model_dict(),
     config={

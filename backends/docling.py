@@ -10,7 +10,7 @@ from docling.datamodel.settings import settings
 from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling_core.types.doc import ImageRefMode
 
-from .settings import ENABLE_DEBUG_MODE
+from .settings import ENABLE_DEBUG_MODE, ENABLE_FORMULA
 
 DOCLING_DEBUG_PATH = Path("/tmp/docling")
 
@@ -20,7 +20,7 @@ pipeline_options = PdfPipelineOptions()
 pipeline_options.accelerator_options = accelerator_options
 pipeline_options.do_ocr = True
 pipeline_options.do_table_structure = True
-pipeline_options.do_formula_enrichment = True
+pipeline_options.do_formula_enrichment = ENABLE_FORMULA
 pipeline_options.generate_picture_images = True
 pipeline_options.images_scale = 2.0
 
